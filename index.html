@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quyosh tizimi</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="loading">
+        <div>Quyosh tizimi bo‘ylab sayohat</div>
+        <progress id="loading-progress" value="0" max="100"></progress>
+        <div id="loading-texture">Teksturalar yuklanmoqda...</div>
+    </div>
+    
+    <div id="ui">
+        <h2>Quyosh tizimi boshqaruvi</h2>
+        <div class="control-group">
+            <label for="speed">Vaqt tezligi:</label>
+            <input id="speed" type="range" min="0" max="20" value="1" step="0.1">
+            <span id="speed-value">1x</span>
+        </div>
+        <div class="control-group">
+            <label for="show-orbits">Orbitalarni ko‘rsatish:</label>
+            <input id="show-orbits" type="checkbox" checked>
+        </div>
+        <div class="control-group">
+            <label for="show-labels">Nomlarni ko‘rsatish:</label>
+            <input id="show-labels" type="checkbox" checked>
+        </div>
+        <div class="control-group">
+            <label for="show-asteroids">Asteroidlarni ko‘rsatish:</label>
+            <input id="show-asteroids" type="checkbox" checked>
+        </div>
+        <div class="control-group">
+            <label for="show-scale">Masshtabni ko‘rsatish:</label>
+            <input id="show-scale" type="checkbox">
+        </div>
+        <div class="control-group">
+            <label for="auto-rotate">Avtomatik aylantirish:</label>
+            <input id="auto-rotate" type="checkbox" checked>
+        </div>
+    </div>
+
+    <div id="info-panel">
+        <button class="close-btn" onclick="document.getElementById('info-panel').style.display='none'">×</button>
+        <h2 id="info-title">Sayyora haqida</h2>
+        <div id="info-content">
+            <div class="planet-fact"><span class="highlight">Turi:</span> <span id="info-type">-</span></div>
+            <div class="planet-fact"><span class="highlight">Diametri:</span> <span id="info-diameter">-</span></div>
+            <div class="planet-fact"><span class="highlight">Quyoshdan masofasi:</span> <span id="info-distance">-</span></div>
+            <div class="planet-fact"><span class="highlight">Orbital davri:</span> <span id="info-period">-</span></div>
+            <div class="planet-fact"><span class="highlight">O‘z o‘qi atrofida aylanish davri:</span> <span id="info-rotation">-</span></div>
+            <div class="planet-fact"><span class="highlight">Yo‘ldoshlari:</span> <span id="info-moons">-</span></div>
+            <div class="planet-fact"><span class="highlight">Atmosferasi:</span> <span id="info-atmosphere">-</span></div>
+            <div class="planet-fact"><span class="highlight">Harorati:</span> <span id="info-temperature">-</span></div>
+            <div class="planet-fact"><span class="highlight">Qiziqarli ma’lumot:</span> <span id="info-fact">-</span></div>
+        </div>
+            <button id="read-aloud" type="button" class="read-aloud-btn">Ovoz chiqarib o‘qish</button>
+        <div id="voice-status" role="status" aria-live="polite"></div>
+    </div>
+
+    <div id="tour-controls">
+        <button id="prev-planet">Oldingisi</button>
+        <button id="tour-btn">Sayohatni boshlash</button>
+        <button id="next-planet">Keyingisi</button>
+    </div>
+
+    <div id="scale-indicator">
+        <div>Masshtab: 1 px = <span id="scale-value">1000</span> km</div>
+    </div>
+    <div id="voice-controls">
+        <button id="voice-stop" title="Ovozni to‘xtatish">⏹</button>
+        <button id="voice-pause" title="Ovozni pauza qilish">⏸</button>
+        <button id="voice-play" title="Ovozni davom ettirish">▶</button>
+    </div>
+    <button id="pause-button">Pauza</button>
+    <button id="fullscreen-button">To‘liq ekran</button>
+    <button id="vr-button">VR rejimi</button>
+
+    <script src="js/core/three.min.js"></script>
+    <script src="js/core/GLTFLoader.js"></script>
+    <script src="js/core/tween.umd.js"></script>
+    <script src="js/core/orbitControls.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
