@@ -18,11 +18,7 @@ let vrButton;
 let effect, controlsVR;
 let lastClickTime = 0;
 let selectedPlanet = null;
-let speechSynthesis = window.speechSynthesis || null;
-let currentUtterance = null;
 let isPaused = false;
-let isSpeaking = false;
-let speechQueue = [];
 let tourTimeout = null;
 let activeSpeechAudio = null;
 let activeSpeechRequest = null;
@@ -927,8 +923,7 @@ function speakText(text, onComplete) {
     const requestId = activeSpeechRequestId;
     const controller = new AbortController();
     activeSpeechRequest = controller;
-    isSpeaking = true;
-    setSpeechStatus('O‘zbekcha ovoz tayyorlanmoqda...');
+    setSpeechStatus('Yandex Alena ovozi tayyorlanmoqda...');
 
     const speechUrl = new URL('/api/speech', window.location.href);
     speechUrl.searchParams.set('text', text);
@@ -949,46 +944,29 @@ function speakText(text, onComplete) {
             activeSpeechAudio.onended = () => finishSpeech(requestId, onComplete);
             activeSpeechAudio.onerror = () => {
                 if (requestId !== activeSpeechRequestId) return;
-                setSpeechStatus('Ovoz faylini ijro qilib bo‘lmadi. Qayta urinib ko‘ring.');
-                finishSpeech(requestId, onComplete);
+                finishSpeech(requestId, onComplete, 'Ovoz faylini ijro qilib bo‘lmadi. Qayta urinib ko‘ring.');
             };
-            setSpeechStatus('O‘zbekcha ovoz bilan o‘qilmoqda...');
+            setSpeechStatus('Yandex Alena ovozi bilan o‘qilmoqda...');
             return activeSpeechAudio.play();
         })
         .catch(error => {
             if (requestId !== activeSpeechRequestId || error.name === 'AbortError') return;
-
-            const uzbekVoice = speechSynthesis && speechSynthesis.getVoices()
-                .find(voice => voice.lang.toLowerCase().startsWith('uz'));
-            if (uzbekVoice) {
-                currentUtterance = new SpeechSynthesisUtterance(text);
-                currentUtterance.lang = uzbekVoice.lang;
-                currentUtterance.voice = uzbekVoice;
-                currentUtterance.onend = () => finishSpeech(requestId, onComplete);
-                currentUtterance.onerror = () => finishSpeech(requestId, onComplete);
-                speechSynthesis.speak(currentUtterance);
-                setSpeechStatus('Qurilmadagi o‘zbekcha ovoz ishlatilmoqda.');
-                return;
-            }
-
-            console.error('O‘zbekcha ovoz sintezi amalga oshmadi:', error);
-            setSpeechStatus('Ovoz ishlamadi. O‘zbekcha ovoz uchun python server.py buyrug‘i bilan serverni ishga tushiring va internetni tekshiring.');
-            finishSpeech(requestId, onComplete);
+            console.error('Yandex Alena ovoz sintezi amalga oshmadi:', error);
+            console.error('Yandex Alena ovoz sintezi amalga oshmadi:', error);
+            finishSpeech(requestId, onComplete, 'Yandex ovozi ishlamadi. Server kaliti va internet ulanishini tekshiring.');
         });
 }
 
-function finishSpeech(requestId, onComplete) {
+function finishSpeech(requestId, onComplete, status = 'O‘qish tugadi.') {
     if (requestId !== activeSpeechRequestId) return;
 
-    isSpeaking = false;
     activeSpeechAudio = null;
     activeSpeechRequest = null;
-    currentUtterance = null;
     if (activeSpeechObjectUrl) {
         URL.revokeObjectURL(activeSpeechObjectUrl);
         activeSpeechObjectUrl = null;
     }
-    setSpeechStatus('O‘qish tugadi.');
+    setSpeechStatus(status);
     if (onComplete) onComplete();
 }
 
@@ -1012,19 +990,11 @@ function stopSpeech() {
         URL.revokeObjectURL(activeSpeechObjectUrl);
         activeSpeechObjectUrl = null;
     }
-    if (speechSynthesis) {
-        speechSynthesis.cancel();
-    }
-    isSpeaking = false;
-    currentUtterance = null;
-    speechQueue = [];
 }
 
 function pauseSpeech() {
     if (activeSpeechAudio) {
         activeSpeechAudio.pause();
-    } else if (speechSynthesis) {
-        speechSynthesis.pause();
     }
 }
 
@@ -1034,10 +1004,6 @@ function resumeSpeech() {
             console.error('Ovozni davom ettirib bo‘lmadi:', error);
             setSpeechStatus('Ovozni davom ettirib bo‘lmadi.');
         });
-    } else if (speechSynthesis && speechSynthesis.paused) {
-        speechSynthesis.resume();
-    } else if (currentUtterance && speechSynthesis) {
-        speechSynthesis.speak(currentUtterance);
     }
 }
 
@@ -1359,12 +1325,6 @@ function setupFullscreen() {
 }
 
 function setupVoiceControls() {
-    if (!speechSynthesis) {
-        document.getElementById('read-aloud').style.display = 'none';
-        document.getElementById('voice-controls').style.display = 'none';
-        return;
-    }
-    
     document.getElementById('read-aloud').addEventListener('click', readAloud);
     document.getElementById('voice-stop').addEventListener('click', stopSpeech);
     document.getElementById('voice-pause').addEventListener('click', pauseSpeech);
